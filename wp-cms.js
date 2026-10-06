@@ -1,7 +1,7 @@
 // Engineering Ninjas — WordPress.com connection
 
 const WP_API =
-  'https://public-api.wordpress.com/rest/v1.1/sites/engineeringninjas.wordpress.com';
+  'https://public-api.wordpress.com/wp/v2/sites/engineeringninjas.wordpress.com';
 
 function stripHtml(html = '') {
   const d = document.createElement('div');
@@ -16,22 +16,23 @@ function decodeHtml(html = '') {
 }
 
 function postImage(post) {
-  return post?.featured_image || '';
+  return post?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
 }
 
 function postCategories(post) {
-  const categories = post?.terms?.category || {};
-  return Object.values(categories).map(c => c.name);
+  const terms = post?._embedded?.['wp:term'] || [];
+  const categories = terms.flat().filter(t => t.taxonomy === 'category');
+  return categories.map(c => c.name);
 }
 
 function postCard(post) {
   const img = postImage(post);
 
   const excerpt = stripHtml(
-    post.excerpt || post.content || ''
+    post.excerpt?.rendered || post.content?.rendered || ''
   ).slice(0, 150);
 
-  const title = decodeHtml(post.title || 'Untitled');
+  const title = decodeHtml(post.title?.rendered || 'Untitled');
   const slug = post.slug || '';
 
   const categories = postCategories(post);
@@ -68,40 +69,44 @@ function postCard(post) {
   `;
 }
 
-async function getPosts(params = 'number=12') {
-  const res = await fetch(`${WP_API}/posts/?${params}`);
+async function getPosts(params = 'per_page=12&_embed=1') {
+  const res = await fetch(`${WP_API}/posts?${params}`);
 
   if (!res.ok) {
     throw new Error(`WordPress API error ${res.status}`);
   }
 
-  const data = await res.json();
-
-  return data.posts || [];
+  return await res.json();
 }
 
 async function getPostBySlug(slug) {
   const res = await fetch(
-    `${WP_API}/posts/slug:${encodeURIComponent(slug)}`
+    `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=1`
   );
 
   if (!res.ok) {
     throw new Error(`WordPress API error ${res.status}`);
   }
 
-  const post = await res.json();
+  const posts = await res.json();
 
-  return post || null;
+  return posts[0] || null;
 }
 
 async function getPostsForCategory(name) {
+  const res = await fetch(
+    `${WP_API}/posts?per_page=100&_embed=1`
+  );
 
-  const posts = await getPosts('number=100');
+  if (!res.ok) {
+    throw new Error(`WordPress API error ${res.status}`);
+  }
+
+  const posts = await res.json();
 
   return posts.filter(post =>
     postCategories(post).some(
-      category =>
-        category.toLowerCase() === name.toLowerCase()
+      category => category.toLowerCase() === name.toLowerCase()
     )
   );
 }
