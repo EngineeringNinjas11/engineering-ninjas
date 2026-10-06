@@ -1,1 +1,198 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Engineering Ninjas practical engineering article."><title>Engineering Ninjas | Article</title><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span class="brand-mark">EN</span><span>Engineering Ninjas</span></a><nav class="nav"><a href="index.html">Home</a><a href="articles.html">Articles</a></nav></div></header><main><article class="section"><div class="container" style="max-width:850px"><div id="article"><p>Loading article…</p></div></div></article></main><footer class="footer"><div class="container footer-bottom"><span>© 2026 Engineering Ninjas</span><span>Engineering knowledge for every branch.</span></div></footer><script src="wp-cms.js"></script><script>(async()=>{const slug=new URLSearchParams(location.search).get('slug');const box=document.getElementById('article');if(!slug){box.innerHTML='<h1>Article not found</h1>';return;}try{const p=await getPostBySlug(slug);if(!p){box.innerHTML='<h1>Article not found</h1>';return;}const title=decodeHtml(p.title.rendered);document.title=title+' | Engineering Ninjas';const img=postImage(p);box.innerHTML=`<div class="eyebrow">ENGINEERING ARTICLE</div><h1 style="font-family:'Space Grotesk';font-size:clamp(40px,6vw,64px);line-height:1.05">${title}</h1>${img?`<img class="article-cover article-cover-large" src="${img}" alt="${title.replace(/"/g,'&quot;')}">`:''}<div class="article-content">${p.content.rendered}</div>`;}catch(e){box.innerHTML='<h1>Article could not be loaded</h1><p>Please try again later.</p>';}})();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="Engineering Ninjas practical engineering article."
+  >
+
+  <title>Engineering Ninjas | Article</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+
+      <a class="brand" href="index.html">
+        <span class="brand-mark">EN</span>
+        <span>Engineering Ninjas</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="articles.html">Articles</a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <article class="section">
+
+      <div class="container" style="max-width:850px">
+
+        <div id="article">
+          <p>Loading article…</p>
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <footer class="footer">
+
+    <div class="container footer-bottom">
+
+      <span>© 2026 Engineering Ninjas</span>
+
+      <span>
+        Engineering knowledge for every branch.
+      </span>
+
+    </div>
+
+  </footer>
+
+
+  <!-- WordPress connection -->
+  <script src="wp-cms.js"></script>
+
+
+  <!-- Load the selected WordPress article -->
+  <script>
+
+    (async () => {
+
+      const slug =
+        new URLSearchParams(location.search).get('slug');
+
+      const box =
+        document.getElementById('article');
+
+
+      if (!slug) {
+
+        box.innerHTML =
+          '<h1>Article not found</h1>';
+
+        return;
+
+      }
+
+
+      try {
+
+        /*
+          Get the same WordPress posts
+          that are already working on
+          the Electrical page.
+        */
+
+        const posts =
+          await getPosts('per_page=100&_embed=1');
+
+
+        /*
+          Find the article that the
+          visitor clicked.
+        */
+
+        const p =
+          posts.find(post => post.slug === slug);
+
+
+        if (!p) {
+
+          box.innerHTML =
+            '<h1>Article not found</h1>';
+
+          return;
+
+        }
+
+
+        const title =
+          decodeHtml(p.title.rendered);
+
+
+        document.title =
+          title + ' | Engineering Ninjas';
+
+
+        const img =
+          postImage(p);
+
+
+        box.innerHTML = `
+
+          <div class="eyebrow">
+            ENGINEERING ARTICLE
+          </div>
+
+
+          <h1
+            style="
+              font-family:'Space Grotesk';
+              font-size:clamp(40px,6vw,64px);
+              line-height:1.05;
+            "
+          >
+            ${title}
+          </h1>
+
+
+          ${
+            img
+              ? `
+                <img
+                  class="article-cover article-cover-large"
+                  src="${img}"
+                  alt="${title.replace(/"/g, '&quot;')}"
+                >
+              `
+              : ''
+          }
+
+
+          <div class="article-content">
+
+            ${p.content.rendered}
+
+          </div>
+
+        `;
+
+
+      } catch (e) {
+
+        console.error(e);
+
+        box.innerHTML = `
+          <h1>Article could not be loaded</h1>
+
+          <p>
+            Please try again later.
+          </p>
+        `;
+
+      }
+
+    })();
+
+  </script>
+
+</body>
+
+</html>
