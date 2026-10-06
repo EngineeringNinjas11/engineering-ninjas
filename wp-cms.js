@@ -27,6 +27,7 @@ function postCategories(post) {
 
 function postCard(post) {
   const img = postImage(post);
+
   const excerpt = stripHtml(
     post.excerpt?.rendered || post.content?.rendered || ''
   ).slice(0, 150);
@@ -34,16 +35,23 @@ function postCard(post) {
   const title = decodeHtml(post.title?.rendered || 'Untitled');
   const slug = post.slug || '';
 
+  const categories = postCategories(post);
+  const category = categories[0] || 'ENGINEERING';
+
   return `
     <article class="article-card">
+
       ${
         img
           ? `<img class="article-cover" src="${img}" alt="${title.replace(/"/g, '&quot;')}">`
-          : `<div class="article-placeholder">⚡</div>`
+          : `<div class="article-icon">⚡</div>`
       }
 
-      <div class="article-card-body">
-        <div class="article-kicker">ENGINEERING</div>
+      <div class="article-card-content">
+
+        <div class="article-category">
+          ${category}
+        </div>
 
         <h3>${title}</h3>
 
@@ -54,7 +62,9 @@ function postCard(post) {
         <a href="article.html?slug=${encodeURIComponent(slug)}">
           Read article →
         </a>
+
       </div>
+
     </article>
   `;
 }
